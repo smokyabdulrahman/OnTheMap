@@ -69,7 +69,7 @@ class ParseClient {
                 }
                 return
             }
-//            print(String(data: data, encoding: .utf8)!)
+            print(String(data: data, encoding: .utf8)!)
             print("lol")
             let decoder = getDecoder()
             
@@ -136,7 +136,7 @@ class ParseClient {
     }
     
     static func getStudentsLocations(completionHandler: @escaping ([StudentLocation], Error?) -> Void){
-        taskForGET(url: Endpoints.StudentsLocations.url, responseType: StudentsLocationsResponse.self) { (response, error) in
+        taskForGET(url: Endpoints.StudentsLocations.url, responseType: StudentsLocations.self) { (response, error) in
             if let response = response {
                 let results = response.results.filter({ (studentLocation) -> Bool in
                     if studentLocation.firstName != nil {

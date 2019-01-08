@@ -7,6 +7,6 @@
 //
 
 import Foundation
-struct StudentsLocationsResponse: Codable {
+struct StudentsLocations: Codable {
     var results: [StudentLocation]
 }

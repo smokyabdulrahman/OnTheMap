@@ -14,15 +14,18 @@ class ParseClient {
     
     enum Endpoints {
         static let base = "https://parse.udacity.com/parse/classes"
-        
+
         case StudentsLocations
         case StudentLocation(String)
         case UpdateStudentLocation(String)
+        case StudentsLocationsWithQuery(Int, String)
         
         var stringValue: String {
             switch self {
             case .StudentsLocations:
                 return Endpoints.base + "/StudentLocation"
+            case .StudentsLocationsWithQuery(let limit, let order):
+                return Endpoints.base + "/StudentLocation?limit=\(limit)&order=\(order)"
             case .StudentLocation(let uniqueKey):
                 return Endpoints.base + "/StudentLocation?where=" + ("{\"uniqueKey\":\"\(uniqueKey)\"}".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
             case .UpdateStudentLocation(let objectId):
@@ -137,6 +140,22 @@ class ParseClient {
     
     static func getStudentsLocations(completionHandler: @escaping ([StudentLocation], Error?) -> Void){
         taskForGET(url: Endpoints.StudentsLocations.url, responseType: StudentsLocations.self) { (response, error) in
+            if let response = response {
+                let results = response.results.filter({ (studentLocation) -> Bool in
+                    if studentLocation.firstName != nil {
+                        return true
+                    }
+                    return false
+                })
+                completionHandler(results, nil)
+            } else {
+                completionHandler([], error)
+            }
+        }
+    }
+    
+    static func getStudentsLocationsWithQuery(limit: Int, order: String, completionHandler: @escaping ([StudentLocation], Error?) -> Void){
+        taskForGET(url: Endpoints.StudentsLocationsWithQuery(limit, order).url, responseType: StudentsLocations.self) { (response, error) in
             if let response = response {
                 let results = response.results.filter({ (studentLocation) -> Bool in
                     if studentLocation.firstName != nil {

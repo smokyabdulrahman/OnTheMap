@@ -30,7 +30,7 @@ class StudentLocationsTableViewController: UITableViewController {
     }
     
     @objc private func getStudentsLocations() {
-        ParseClient.getStudentsLocations { (studentsLocations, error) in
+        ParseClient.getStudentsLocationsWithQuery(limit: 100, order: "-updatedAt") { (studentsLocations, error) in
             if let error = error {
                 self.showAlert(withTitle: "Oppss!", withMessage: error.localizedDescription)
                 ActivityIndicatorController.sharedInstance.removeLoader()
@@ -56,11 +56,12 @@ class StudentLocationsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         
-        guard let first = studentLocations[indexPath.row].firstName, let last = studentLocations[indexPath.row].lastName, let urlString = studentLocations[indexPath.row].mediaURL else {
+        guard let first = studentLocations[indexPath.row].firstName, let last = studentLocations[indexPath.row].lastName else {
             return UITableViewCell(style: .default, reuseIdentifier: cellIdentifier)
         }
+        
         cell.textLabel?.text = "\(first) \(last)"
-        cell.detailTextLabel?.text = "\(urlString)"
+        cell.detailTextLabel?.text = studentLocations[indexPath.row].mediaURL ?? ""
         cell.imageView?.image = UIImage(named: "udacity")
         return cell
     }
